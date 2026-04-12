@@ -13,7 +13,7 @@ EmoSync is a high-fidelity IoT wearable platform and medical data visualization 
 - **Backend:** Node.js, Express.js.
 - **APIs & Protocols:** Socket.io (Bi-directional real-time events).
 - **Database:** MongoDB (User queuing & node history authentication).
-- **Hardware Integrations:** ESP32 NodeMCU, MPU6050 (Spatial Accelerometer/Gyroscope), SSD1306 (128x64 OLED Display), 5V Active Buzzer.
+- **Hardware Integrations:** ESP32 NodeMCU, MAX30100 (Pulse Oximeter/Heart Rate), MPU6050 (Spatial Accelerometer/Gyroscope), SSD1306 (128x64 OLED Display), Active Buzzer.
 
 ## 🌩️ Deployment
 The project architecture strictly decouples the client and server. The Node.js `backend/` must run actively via Express, while the `frontend/` utilizes standard Vite compilation parameters. 
