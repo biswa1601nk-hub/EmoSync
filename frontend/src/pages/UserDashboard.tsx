@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
+import Hls from 'hls.js';
 import { Wifi, Activity } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -27,6 +28,20 @@ const UserDashboard = () => {
   const [btStatus, setBtStatus] = useState<string>('Disconnected');
   const [isSimulated, setIsSimulated] = useState<boolean>(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month'>('week');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const videoSrc = "https://stream.mux.com/4IMYGcL01xjs7ek5ANO17JC4VQVUTsojZlnw4fXzwSxc.m3u8";
+    if (videoRef.current) {
+      if (Hls.isSupported()) {
+        const hls = new Hls({ startPosition: -1 });
+        hls.loadSource(videoSrc);
+        hls.attachMedia(videoRef.current);
+      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+        videoRef.current.src = videoSrc;
+      }
+    }
+  }, []);
   
   const socketRef = useRef<Socket | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -218,11 +233,20 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen pt-24 px-4 pb-12 bg-transparent relative overflow-hidden">
-      {/* Animated Motion Background Network */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-900/20 blur-[120px] animate-[pulse_8s_ease-in-out_infinite]"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-900/10 blur-[150px] animate-[pulse_12s_ease-in-out_infinite]"></div>
-         <div className="absolute top-[30%] left-[40%] w-[40vw] h-[40vw] rounded-full bg-red-900/5 blur-[100px] animate-[pulse_15s_ease-in-out_infinite]"></div>
+      {/* Animated Motion Background Network & Video Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-black">
+         <video 
+           ref={videoRef}
+           autoPlay 
+           loop 
+           muted 
+           playsInline
+           className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen scale-105"
+         />
+         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f18]/90 via-transparent to-[#0a0f18]/90"></div>
+         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-900/30 blur-[120px] animate-[pulse_8s_ease-in-out_infinite] mix-blend-screen"></div>
+         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-900/20 blur-[150px] animate-[pulse_12s_ease-in-out_infinite] mix-blend-screen"></div>
+         <div className="absolute top-[30%] left-[40%] w-[40vw] h-[40vw] rounded-full bg-red-900/10 blur-[100px] animate-[pulse_15s_ease-in-out_infinite] mix-blend-screen"></div>
       </div>
 
       <div className="max-w-7xl mx-auto space-y-6 relative z-10">
