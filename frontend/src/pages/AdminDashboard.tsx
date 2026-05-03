@@ -29,21 +29,10 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUserForForward, setSelectedUserForForward] = useState<UserData | null>(null);
+  const [customMessage, setCustomMessage] = useState('');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
   const USERS_PER_PAGE = 6;
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const videoSrc = "https://stream.mux.com/4IMYGcL01xjs7ek5ANO17JC4VQVUTsojZlnw4fXzwSxc.m3u8";
-    if (videoRef.current) {
-      if (Hls.isSupported()) {
-        const hls = new Hls({ startPosition: -1 });
-        hls.loadSource(videoSrc);
-        hls.attachMedia(videoRef.current);
-      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-        videoRef.current.src = videoSrc;
-      }
-    }
-  }, []);
 
   useEffect(() => {
     setCurrentPage(1); // Auto reset to first page upon any new search filters
@@ -61,8 +50,20 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  const handleForward = (userId: string) => {
-    alert(`Forwarding alert for User ID: ${userId} to authorities via API.`);
+  const handleInitiateForward = (user: UserData) => {
+    setSelectedUserForForward(user);
+    setCustomMessage('');
+  };
+
+  const handleFinalForward = () => {
+    // Here we simulate the API call to send the SMS/Email to authorities
+    setSelectedUserForForward(null);
+    setShowSuccessToast(true);
+    
+    // Hide toast after 3 seconds
+    setTimeout(() => {
+      setShowSuccessToast(false);
+    }, 3000);
   };
 
   // Chart Data
@@ -122,22 +123,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen pt-24 px-4 pb-12 bg-transparent font-sans relative overflow-hidden">
-      {/* Animated Motion Background Network & Video Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-black">
-         <video 
-           ref={videoRef}
-           autoPlay 
-           loop 
-           muted 
-           playsInline
-           className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen scale-105"
-         />
-         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f18]/90 via-transparent to-[#0a0f18]/90"></div>
-         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-900/30 blur-[120px] animate-[pulse_8s_ease-in-out_infinite] mix-blend-screen"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-900/20 blur-[150px] animate-[pulse_12s_ease-in-out_infinite] mix-blend-screen"></div>
-         <div className="absolute top-[30%] left-[40%] w-[40vw] h-[40vw] rounded-full bg-red-900/10 blur-[100px] animate-[pulse_15s_ease-in-out_infinite] mix-blend-screen"></div>
-      </div>
-
       <div className="max-w-7xl mx-auto space-y-6 relative z-10">
         
         {/* Top Grid: Graph and Critical Sidebar */}
@@ -189,7 +174,7 @@ const AdminDashboard = () => {
                       Acute physiological variance detected. Stress signature exceeds safe threshold parameters.
                     </p>
                     <button 
-                      onClick={() => handleForward(user.id)}
+                      onClick={() => handleInitiateForward(user)}
                       className="w-full bg-white text-red-700 hover:bg-gray-100 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Send className="w-4 h-4" /> Forward to Authorities
@@ -339,7 +324,81 @@ const AdminDashboard = () => {
         </div>
 
       </div>
-      
+
+      {/* Custom Message Modal */}
+      {selectedUserForForward && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#1a1d24] border border-gray-700/50 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in duration-200">
+            {/* Modal Header */}
+            <div className="bg-[#13151b] p-5 border-b border-gray-800 flex justify-between items-center">
+              <h3 className="text-white font-bold text-lg flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                Forward Alert
+              </h3>
+              <button 
+                onClick={() => setSelectedUserForForward(null)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-6 space-y-4">
+               <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex justify-between items-center">
+                 <div>
+                   <p className="text-red-400 font-bold text-xs uppercase tracking-wider mb-1 flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> CRITICAL CONDITION</p>
+                   <p className="text-white font-bold text-lg">{selectedUserForForward.name}</p>
+                   <p className="text-gray-500 text-xs mt-0.5">ID: {selectedUserForForward.id}</p>
+                 </div>
+                 <div className="text-right">
+                   <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Stress Signature</p>
+                   <p className="text-red-400 font-bold text-2xl">{selectedUserForForward.stressLevel}%</p>
+                 </div>
+               </div>
+               
+               <div>
+                 <label className="block text-gray-300 text-sm font-medium mb-2">Custom Instruction / Message</label>
+                 <textarea 
+                   className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-colors h-32 resize-none text-sm"
+                   placeholder="Type any specific instructions for the authorities here..."
+                   value={customMessage}
+                   onChange={(e) => setCustomMessage(e.target.value)}
+                 ></textarea>
+                 <p className="text-gray-500 text-xs mt-2">This message will be attached to the automated telemetry report.</p>
+               </div>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="bg-[#13151b] p-5 border-t border-gray-800 flex justify-end gap-3">
+               <button 
+                 onClick={() => setSelectedUserForForward(null)}
+                 className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition-colors"
+               >
+                 Cancel
+               </button>
+               <button 
+                 onClick={handleFinalForward}
+                 className="px-5 py-2.5 rounded-lg text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 transition-colors shadow-lg shadow-blue-600/20"
+               >
+                 <Send className="w-4 h-4" /> Final Forward
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast Notification */}
+      {showSuccessToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-emerald-500 text-white px-6 py-4 rounded-xl shadow-2xl shadow-emerald-500/20 flex items-center gap-3 animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">✓</div>
+          <div>
+            <p className="font-bold text-sm">Alert Forwarded</p>
+            <p className="text-emerald-100 text-xs">Message successfully routed to authorities.</p>
+          </div>
+        </div>
+      )}
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;

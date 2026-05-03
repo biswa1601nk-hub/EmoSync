@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import { Navbar } from './components/Navbar';
+import { GlobalBackground } from './components/GlobalBackground';
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
   const role = localStorage.getItem('role');
@@ -23,12 +24,8 @@ function App() {
     <Router>
       <div className="min-h-screen font-sans relative overflow-x-hidden text-white bg-transparent">
         
-        {/* Animated Ambient Background */}
-        <div className="animated-bg">
-          <div className="blob blob-1"></div>
-          <div className="blob blob-2"></div>
-          <div className="blob blob-3"></div>
-        </div>
+        {/* Global Synchronized Background Manager */}
+        <GlobalBackground />
 
         <div className="relative z-10 text-white min-h-screen">
           <Navbar />

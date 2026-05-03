@@ -8,13 +8,17 @@ const { OAuth2Client } = require('google-auth-library');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID');
 
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? [process.env.FRONTEND_URL, 'http://localhost:5173'] 
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 const app = express();
-app.use(cors());
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: '*' }
+  cors: { origin: allowedOrigins, credentials: true }
 });
 
 // Configure MongoDB Database
@@ -203,6 +207,11 @@ app.post('/api/google-login', async (req, res) => {
   }
 });
 
+
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+});
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
