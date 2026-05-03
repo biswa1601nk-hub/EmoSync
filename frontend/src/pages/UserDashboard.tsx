@@ -105,7 +105,15 @@ const UserDashboard = () => {
     
     pollIntervalRef.current = setInterval(async () => {
       try {
-        const fetchRes = await fetch(`http://${connectedIp}/data`);
+        // Enforce a strict 800ms timeout so the browser never hangs waiting for delayed WiFi packets!
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 800);
+
+        const fetchRes = await fetch(`http://${connectedIp}/data`, {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
         const data = await fetchRes.json();
         
         let currentHR = parseFloat(data.hr) || 0;
