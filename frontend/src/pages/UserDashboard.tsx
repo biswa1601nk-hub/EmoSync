@@ -31,6 +31,7 @@ const UserDashboard = () => {
   
   const socketRef = useRef<Socket | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const failedAttemptsRef = useRef<number>(0);
 
   useEffect(() => {
     // Connect to websocket backend
@@ -105,9 +106,9 @@ const UserDashboard = () => {
     
     pollIntervalRef.current = setInterval(async () => {
       try {
-        // Enforce a strict 800ms timeout so the browser never hangs waiting for delayed WiFi packets!
+        // Enforce a strict 3000ms timeout so the browser doesn't completely hang, but allows 1-2sec WiFi jitter pauses
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 800);
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
 
         const fetchRes = await fetch(`http://${connectedIp}/data`, {
           signal: controller.signal
@@ -115,6 +116,9 @@ const UserDashboard = () => {
         
         clearTimeout(timeoutId);
         const data = await fetchRes.json();
+        
+        // Reset failure counter because packet arrived successfully!
+        failedAttemptsRef.current = 0;
         
         // Ensure status reflects active connection if it recovered from a blip
         setBtStatus(`🟢 Connected & Streaming over Local WiFi Server (${connectedIp})`);
@@ -153,14 +157,20 @@ const UserDashboard = () => {
         }
       } catch (innerErr) {
         console.error("Local polling drop:", innerErr);
-        // Visual indicator that the hardware has been turned off or dropped network
-        setBtStatus(`🔴 Connection Lost! Hardware offline. Attempting to reconnect...`);
         
-        // Flatline the graph and reset stats to clearly indicate frozen/dead data stream
-        setStressLevel(0);
-        const timeStr = new Date().toLocaleTimeString();
-        setLabels(prev => [...prev.slice(-59), timeStr]);
-        setHistory(prev => [...prev.slice(-59), 0]);
+        failedAttemptsRef.current += 1;
+        
+        // Only trigger the visual offline "dead" state if the data has been freezing/failing for roughly 20-30 seconds
+        if (failedAttemptsRef.current >= 20) {
+          // Visual indicator that the hardware has been completely turned off or dropped network
+          setBtStatus(`🔴 Connection Lost! Hardware offline. Attempting to reconnect...`);
+          
+          // Flatline the graph and reset stats to clearly indicate frozen/dead data stream
+          setStressLevel(0);
+          const timeStr = new Date().toLocaleTimeString();
+          setLabels(prev => [...prev.slice(-59), timeStr]);
+          setHistory(prev => [...prev.slice(-59), 0]);
+        }
       }
     }, 1000); // Poll exactly 1 time per second
 
