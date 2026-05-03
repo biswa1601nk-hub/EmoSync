@@ -90,7 +90,7 @@ const Home = () => {
             <p className="text-white/70 text-xs md:text-sm uppercase tracking-widest mb-4 font-semibold">
               Protecting your wellbeing
             </p>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-medium tracking-tighter leading-[0.85] mb-12">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-medium tracking-tighter leading-[0.85] mb-8 md:mb-12">
               <span className="block text-white">Understand</span>
               <span className="block mt-2">
                 <ShinyText text="Your Mind." />
