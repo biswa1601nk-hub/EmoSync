@@ -203,7 +203,7 @@ const AdminDashboard = () => {
 
         {/* Active User Monitoring Table Row */}
         <div className="bg-[#1a1d24]/40 backdrop-blur-3xl border border-gray-800/60 rounded-2xl shadow-2xl mt-6 overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-gray-800 flex justify-between items-center">
+          <div className="p-6 border-b border-gray-800 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
             <h2 className="text-xl font-semibold text-white">Active User Monitoring</h2>
             <div className="flex gap-3 text-gray-400 items-center">
                {isSearchOpen || searchQuery ? (
@@ -297,8 +297,8 @@ const AdminDashboard = () => {
             </table>
           </div>
           
-          <div className="p-4 border-t border-gray-800 bg-[#13151b] flex items-center justify-between text-xs text-gray-500 font-medium">
-             <p>Showing {filteredTableUsers.length > 0 ? (safeCurrentPage - 1) * USERS_PER_PAGE + 1 : 0} to {Math.min(safeCurrentPage * USERS_PER_PAGE, filteredTableUsers.length)} of {filteredTableUsers.length} system nodes</p>
+          <div className="p-4 border-t border-gray-800 bg-[#13151b] flex flex-col sm:flex-row gap-4 items-center justify-between text-xs text-gray-500 font-medium">
+             <p className="text-center sm:text-left">Showing {filteredTableUsers.length > 0 ? (safeCurrentPage - 1) * USERS_PER_PAGE + 1 : 0} to {Math.min(safeCurrentPage * USERS_PER_PAGE, filteredTableUsers.length)} of {filteredTableUsers.length} system nodes</p>
              <div className="flex border border-gray-800 rounded overflow-hidden">
                 <button 
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
