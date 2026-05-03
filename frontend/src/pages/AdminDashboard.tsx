@@ -15,18 +15,6 @@ import { AlertTriangle, Send, Flag, MoreVertical, Filter } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Global Chart Options (Extracted to prevent heavy re-renders & freezing on state changes)
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: { duration: 1000, easing: 'linear' as const },
-  plugins: { legend: { display: false } },
-  scales: { 
-    y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } },
-    x: { grid: { display: false } }
-  }
-};
-
 interface UserData {
   id: string;
   name: string;
@@ -93,6 +81,18 @@ const AdminDashboard = () => {
         barPercentage: 0.6,
       }
     ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: { 
+      y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } },
+      x: { grid: { display: false } }
+    }
   };
 
   const globalAvg = users.length > 0 
