@@ -86,7 +86,6 @@ const AdminDashboard = () => {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
     plugins: {
       legend: { display: false }
     },

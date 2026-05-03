@@ -108,9 +108,6 @@ const UserDashboard = () => {
         const fetchRes = await fetch(`http://${connectedIp}/data`);
         const data = await fetchRes.json();
         
-        // Ensure status reflects active connection if it recovered from a blip
-        setBtStatus(`🟢 Connected & Streaming over Local WiFi Server (${connectedIp})`);
-
         let currentHR = parseFloat(data.hr) || 0;
         let currentSpo2 = parseFloat(data.spo2) || 0;
         let currentReading = parseFloat(data.stress) || 0;
@@ -145,14 +142,6 @@ const UserDashboard = () => {
         }
       } catch (innerErr) {
         console.error("Local polling drop:", innerErr);
-        // Visual indicator that the hardware has been turned off or dropped network
-        setBtStatus(`🔴 Connection Lost! Hardware offline. Attempting to reconnect...`);
-        
-        // Flatline the graph and reset stats to clearly indicate frozen/dead data stream
-        setStressLevel(0);
-        const timeStr = new Date().toLocaleTimeString();
-        setLabels(prev => [...prev.slice(-59), timeStr]);
-        setHistory(prev => [...prev.slice(-59), 0]);
       }
     }, 1000); // Poll exactly 1 time per second
 
@@ -174,7 +163,7 @@ const UserDashboard = () => {
     ]
   };
 
-  const lineChartOptions = { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } };
+  const lineChartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } };
 
   // Dynamic Pattern Generator based strictly on your active live history mathematical loops!
   const buildBlocks = (numBlocks: number, sliceSize: number) => {
@@ -220,7 +209,6 @@ const UserDashboard = () => {
   const patternChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
     plugins: { legend: { display: false } },
     scales: {
       y: { display: false, min: 0, max: 100 }, // Hide Y-Axis like the image
