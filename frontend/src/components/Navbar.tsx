@@ -7,6 +7,8 @@ export const Navbar = () => {
   useLocation();
 
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +17,11 @@ export const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 transition-all duration-200 pointer-events-none">
@@ -66,10 +73,49 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Nav Toggle */}
-        <button className="lg:hidden text-white">
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="lg:hidden text-white p-2 rounded-lg bg-white/5 border border-white/10"
+        >
           <Menu className="w-6 h-6" />
         </button>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden absolute top-full left-4 right-4 mt-2 bg-[#111318]/95 backdrop-blur-3xl border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-4 pointer-events-auto">
+          {localStorage.getItem('role') && (
+            <>
+              <Link to="/" className="text-base text-white/80 hover:text-white transition-colors py-2 border-b border-white/5">Home</Link>
+              <Link to="/dashboard" className="text-base text-white/80 hover:text-white transition-colors py-2 border-b border-white/5">Dashboard</Link>
+            </>
+          )}
+          
+          {localStorage.getItem('role') === 'admin' && (
+             <Link to="/admin" className="text-base text-white/80 hover:text-white transition-colors py-2 border-b border-white/5">Analytics</Link>
+          )}
+
+          {localStorage.getItem('role') ? (
+            <div className="flex flex-col gap-4 mt-2">
+              {localStorage.getItem('userName') && (
+                <span className="text-sm font-medium text-blue-400">
+                  Logged in as: {localStorage.getItem('userName')}
+                </span>
+              )}
+              <button 
+                onClick={() => { localStorage.removeItem('role'); localStorage.removeItem('userName'); window.location.href = '/'; }} 
+                className="w-full bg-red-500/10 text-red-400 hover:bg-red-500/20 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 font-bold"
+              >
+                Logout <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition-colors flex items-center justify-center gap-2 font-bold mt-2">
+              Login to Account <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
+      )}
     </nav>
   );
 };
