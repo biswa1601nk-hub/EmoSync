@@ -30,11 +30,7 @@ function App() {
         <div className="relative z-10 text-white min-h-screen">
           <Navbar />
           <Routes>
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            } />
+            <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={
               <ProtectedRoute allowedRoles={['user', 'admin']}>
                 <UserDashboard />
