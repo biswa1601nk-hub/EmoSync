@@ -39,7 +39,10 @@ const AdminDashboard = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
+    const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000', {
+      transports: ['websocket'],
+      withCredentials: true
+    });
     
     socket.on('emotions-update', (data) => {
       setUsers(data);

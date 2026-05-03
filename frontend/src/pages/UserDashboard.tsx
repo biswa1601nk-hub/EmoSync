@@ -34,7 +34,10 @@ const UserDashboard = () => {
 
   useEffect(() => {
     // Connect to websocket backend
-    socketRef.current = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
+    socketRef.current = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000', {
+      transports: ['websocket'],
+      withCredentials: true
+    });
     
     socketRef.current.on('emotions-update', (users) => {
       // Completely severed backend simulation injection.
