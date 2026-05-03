@@ -17,6 +17,26 @@ import { Line, Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
+// Global Chart Options (Extracted to prevent heavy re-renders & freezing on state changes)
+const lineChartOptions = { 
+  responsive: true, 
+  maintainAspectRatio: false, 
+  animation: { duration: 1000, easing: 'linear' as const }, 
+  plugins: { legend: { display: false } }, 
+  scales: { y: { min: 0, max: 100 } } 
+};
+
+const patternChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: { duration: 1000, easing: 'linear' as const },
+  plugins: { legend: { display: false } },
+  scales: {
+    y: { display: false, min: 0, max: 100 },
+    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { weight: 'bold' } }, border: { display: false } }
+  }
+};
+
 const UserDashboard = () => {
   const [stressLevel, setStressLevel] = useState(50);
   const [heartRate, setHeartRate] = useState(0);
@@ -163,14 +183,6 @@ const UserDashboard = () => {
     ]
   };
 
-  const lineChartOptions = { 
-    responsive: true, 
-    maintainAspectRatio: false, 
-    animation: { duration: 400, easing: 'easeOutQuart' }, 
-    plugins: { legend: { display: false } }, 
-    scales: { y: { min: 0, max: 100 } } 
-  };
-
   // Dynamic Pattern Generator based strictly on your active live history mathematical loops!
   const buildBlocks = (numBlocks: number, sliceSize: number) => {
     let result = Array(numBlocks).fill(0);
@@ -207,24 +219,27 @@ const UserDashboard = () => {
          }),
          borderRadius: 8,
          borderSkipped: false,
+  const isWeek = timeRange === 'week';
+  const displayLabels = isWeek ? sevenDayLabels : twelveMonthLabels;
+  const displayValues = isWeek ? sevenDayValues : twelveMonthValues;
+  
+  const patternChartData = {
+    labels: displayLabels,
+    datasets: [
+      {
+         label: 'Average Stress Block',
+         data: displayValues,
+         backgroundColor: displayLabels.map((_, idx) => {
+             // Let the visual aesthetic react beautifully to the ESP32!
+             if (displayValues[idx] >= 80) return 'rgba(239, 68, 68, 0.8)'; // Blood Red for Danger Spikes
+             if (displayValues[idx] >= 60) return 'rgba(234, 179, 8, 0.5)'; // Yellow warning
+             return 'rgba(37, 99, 235, 1)'; // Deep solid blue for safe loops
+         }),
+         borderRadius: 8,
+         borderSkipped: false,
          barPercentage: isWeek ? 0.6 : 0.8,
       }
     ]
-  };
-
-  const patternChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 400, easing: 'easeOutQuart' },
-    plugins: { legend: { display: false } },
-    scales: {
-      y: { display: false, min: 0, max: 100 }, // Hide Y-Axis like the image
-      x: { 
-         grid: { display: false }, 
-         ticks: { color: '#6b7280', font: { weight: 'bold' } },
-         border: { display: false }
-      }
-    }
   };
 
   return (
