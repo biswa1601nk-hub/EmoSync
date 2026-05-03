@@ -22,7 +22,6 @@ body {
 
 .blob {
   position: absolute;
-  filter: blur(140px);
   z-index: 0;
   opacity: 0.5;
   border-radius: 50%;

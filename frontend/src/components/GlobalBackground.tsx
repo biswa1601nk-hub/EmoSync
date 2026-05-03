@@ -75,12 +75,8 @@ export const GlobalBackground = () => {
          />
          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f18]/90 via-transparent to-[#0a0f18]/90"></div>
          
-         {/* Pulse blobs visible immediately for perfect sync */}
-         <div>
-           <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-900/30 blur-[120px] animate-[pulse_8s_ease-in-out_infinite] mix-blend-screen"></div>
-           <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-900/20 blur-[150px] animate-[pulse_12s_ease-in-out_infinite] mix-blend-screen"></div>
-           <div className="absolute top-[30%] left-[40%] w-[40vw] h-[40vw] rounded-full bg-red-900/10 blur-[100px] animate-[pulse_15s_ease-in-out_infinite] mix-blend-screen"></div>
-         </div>
+         {/* Pulse blobs removed for performance - CSS background blobs handle the ambient color */}
+         <div></div>
       </div>
     </>
   );
