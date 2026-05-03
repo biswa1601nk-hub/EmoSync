@@ -86,6 +86,7 @@ const AdminDashboard = () => {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: { duration: 400, easing: 'easeOutQuart' },
     plugins: {
       legend: { display: false }
     },
