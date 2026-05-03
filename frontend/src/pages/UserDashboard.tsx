@@ -163,7 +163,7 @@ const UserDashboard = () => {
     ]
   };
 
-  const lineChartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } };
+  const lineChartOptions = { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } };
 
   // Dynamic Pattern Generator based strictly on your active live history mathematical loops!
   const buildBlocks = (numBlocks: number, sliceSize: number) => {
@@ -209,6 +209,7 @@ const UserDashboard = () => {
   const patternChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: false,
     plugins: { legend: { display: false } },
     scales: {
       y: { display: false, min: 0, max: 100 }, // Hide Y-Axis like the image
