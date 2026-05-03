@@ -298,7 +298,7 @@ const UserDashboard = () => {
               
               {/* The 3D Hovering Reticle/Object */}
               <div 
-                 className={`w-36 h-36 bg-blue-600/10 backdrop-blur-md border-2 ${isSimulated ? 'border-gray-600/30' : 'border-blue-400'} rounded-3xl flex items-center justify-center transition-transform duration-[100ms] ease-out`}
+                 className={`w-36 h-36 bg-blue-600/10 backdrop-blur-md border-2 ${isSimulated ? 'border-gray-600/30' : 'border-blue-400'} rounded-3xl flex items-center justify-center transition-transform duration-[600ms] ease-out`}
                  style={{ 
                    transform: `rotateX(${isSimulated ? 15 : motion.y * -90}deg) rotateY(${isSimulated ? -15 : motion.x * 90}deg) translateZ(30px)`,
                    boxShadow: isSimulated ? 'none' : '0 10px 40px -10px rgba(59,130,246,0.5), inset 0 0 20px rgba(59,130,246,0.2)'
